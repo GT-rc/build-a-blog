@@ -15,11 +15,70 @@
 # limitations under the License.
 #
 import webapp2
+import os
+import jinja2
 
-class MainHandler(webapp2.RequestHandler):
+from google.appengine.ext import db
+
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=True)
+
+class Handler(webapp2.RequestHandler):
+    def write(self, *a, **kw):
+        self.response.write(*a, **kw)
+
+    def render_str(self, template, **params):
+        t = jinja_env.get_template(template)
+        return t.render(params)
+
+    def render(self, template, **kw):
+        self.write(self.render_str(template, **kw))
+
+    # def render_front(self, title="", blog="", error=""):
+    #
+    #     self.render('base.html', title=title, blog=blog, error=error, blogs=blogs)
+
+class Blog(db.Model):
+    title = db.StringProperty(required=True)
+    body = db.TextProperty(required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
+
+class MainHandler(Handler):
     def get(self):
-        self.response.write('Hello world!')
+        blogs = db.GqlQuery("SELECT * FROM Blog ORDER BY created DESC LIMIT 5")
+        self.render("home.html")
+        # t = jinja_env.get_template("home.html")
+        # content = t.render(blogs=blogs)
+        # self.render(content)
+
+class NewPostHandler(Handler):
+    def get(self):
+
+        t = jinja_env.get_template("newpost.html")
+        content = t.render()
+        self.response.write(content)
+
+    def post(self, id):
+        title = self.request.get("title")
+        blog = self.request.get("blog")
+
+        # Text is already escaped by the template, so no need to do that here.
+
+        if not title and body:
+            error = "Please enter both a title and a blog post."
+            self.render('newpost.html', title, blog, error)
+        else:
+            ipsum = Blog(title=title, blog=blog)
+            ipsum.put()
+
+            self.redirect('/blog/{}'.format(id))
+
+class PermalinkHandler(Handler):
+    pass
+
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/blogs', NewPostHandler),
+    webapp2.Route('/blog/<id:\d+>', PermalinkHandler)
 ], debug=True)
