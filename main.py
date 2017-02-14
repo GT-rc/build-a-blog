@@ -17,6 +17,9 @@
 import webapp2
 import os
 import jinja2
+import logging
+logger = logging.getLogger(__file__)
+
 
 from google.appengine.ext import db
 
@@ -34,9 +37,6 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
-    # def render_front(self, title="", blog="", error=""):
-    #
-    #     self.render('base.html', title=title, blog=blog, error=error, blogs=blogs)
 
 class Blog(db.Model):
     title = db.StringProperty(required=True)
@@ -46,7 +46,7 @@ class Blog(db.Model):
 class MainHandler(Handler):
     def get(self):
         blogs = db.GqlQuery("SELECT * FROM Blog ORDER BY created DESC LIMIT 5")
-        self.render("home.html")
+        self.render("home.html", blogs=blogs)
         # t = jinja_env.get_template("home.html")
         # content = t.render(blogs=blogs)
         # self.render(content)
@@ -58,23 +58,36 @@ class NewPostHandler(Handler):
         content = t.render()
         self.response.write(content)
 
-    def post(self, id):
+    def post(self):
         title = self.request.get("title")
         blog = self.request.get("blog")
 
         # Text is already escaped by the template, so no need to do that here.
+        logger.error("id-{}-{}".format(title, blog))
+        if not title == "" and not blog == "":
+            ipsum = Blog(title=title, body=blog)
+            ipsum.put()
+            #get id from db
+            ida = ipsum.key().id()
+            logger.error("id{}".format(ida))
+            self.redirect('/blog/{}'.format(ida))
 
-        if not title and body:
+        else:
             error = "Please enter both a title and a blog post."
             self.render('newpost.html', title, blog, error)
-        else:
-            ipsum = Blog(title=title, blog=blog)
-            ipsum.put()
 
-            self.redirect('/blog/{}'.format(id))
+
 
 class PermalinkHandler(Handler):
-    pass
+    def get(self, id):
+        title = self.request.get("title")
+        blog = self.request.get("blog")
+
+        t = jinja_env.get_template("permalink.html")
+        content = t.render(title)
+        self.response.write(content)
+
+
 
 
 app = webapp2.WSGIApplication([

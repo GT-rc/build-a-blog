@@ -13,6 +13,7 @@
             width: 800px;
             margin: 0 auto;
             padding: 10px;
+            background: #7acc7d;
         }
         .error {
             color: red;
@@ -22,13 +23,13 @@
             font-size: 20px;
         }
         input[type=text] {
-            width: 400px;
+            width: 800px;
             font-size: 20px;
             padding: 2px;
         }
         textarea {
-            width: 400px;
-            height: 200px;
+            width: 800px;
+            height: 300px;
             font-size: 17px;
             font-family: monospace;
         }
@@ -38,14 +39,17 @@
         hr {
             margin: 20px auto;
         }
+        /*button {
+            align: right;
+        }*/
         .art + .art {
             margin-top: 20px;
         }
-        .art-title {
+        .post-title {
             font-weight: bold;
             font-size: 20px;
         }
-        .art-body {
+        .post-body {
             margin: 0;
             font-size: 17px;
         }
@@ -53,6 +57,7 @@
 
     <body>
         <h1>It's A Blog!</h1>
+        <button align="right"><a href="/blogs">Create A New Post</a></button>
         <hr>
 
         {% block content %}
