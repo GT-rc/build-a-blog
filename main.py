@@ -37,7 +37,6 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
-
 class Blog(db.Model):
     title = db.StringProperty(required=True)
     body = db.TextProperty(required=True)
@@ -46,7 +45,7 @@ class Blog(db.Model):
 class MainHandler(Handler):
     def get(self):
         blogs = db.GqlQuery("SELECT * FROM Blog ORDER BY created DESC LIMIT 5")
-        
+
         self.render("home.html", blogs=blogs)
         # t = jinja_env.get_template("home.html")
         # content = t.render(blogs=blogs)
@@ -77,7 +76,6 @@ class NewPostHandler(Handler):
             #self.redirect('/blog/{}'.format(ida))
             #self.render('permalink.html', blog=ipsum)
             self.redirect('/blog/%s' % str(ida))
-#4925812092436480
         else:
             error = "Please enter both a title and a blog post."
             self.render_front(title, blog, error)
@@ -89,7 +87,6 @@ class PermalinkHandler(Handler):
         if dolor:
             #logger.error("id{}".format(ida))
             self.render('permalink.html', blog=dolor)
-
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),

@@ -3,7 +3,6 @@
 {% block content %}
 
     {% for item in blogs %}
-
         <div class="post">
             <div class="post-title"><a href="blog/{{ item.key().id() }}">{{item.title}}</a></div>
             <pre class="post-body">{{item.body}}</pre>

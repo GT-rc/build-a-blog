@@ -13,6 +13,7 @@
             width: 800px;
             margin: 0 auto;
             padding: 10px;
+            background-image: url('../../images/pexels-photo-269001.jpeg');
             background: #7acc7d;
         }
         .error {
@@ -56,8 +57,13 @@
     </style>
 
     <body>
-        <h1><a href="/">It's A Blog!</a></h1>
-        <button align="right"><a href="/blogs">Create A New Post</a></button>
+        <nav>
+            <a href="/">Home</a>
+            &nbsp;&nbsp; | &nbsp;&nbsp;
+            <a href="/blogs">New Post</a>
+        </nav>
+        <h1>It's A Blog!</h1>
+
         <hr>
 
         {% block content %}
