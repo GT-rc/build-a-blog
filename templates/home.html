@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-blah blah blah
+
     {% for item in blogs %}
         <div class="post">
-            <div class="post-title">{{blog.title}}</div>
-            <pre class="post-body">{{blog.blog}}</pre>
+            <div class="post-title">{{item.title}}</div>
+            <pre class="post-body">{{item.body}}</pre>
         </div>
+        <hr>
     {% endfor %}
 
 {% endblock %}

@@ -52,6 +52,9 @@ class MainHandler(Handler):
         # self.render(content)
 
 class NewPostHandler(Handler):
+    def render_front(self, title="", blog="", error=""):
+        self.render('newpost.html', title=title, blog=blog, error=error)
+
     def get(self):
 
         t = jinja_env.get_template("newpost.html")
@@ -63,31 +66,28 @@ class NewPostHandler(Handler):
         blog = self.request.get("blog")
 
         # Text is already escaped by the template, so no need to do that here.
-        logger.error("id-{}-{}".format(title, blog))
+        # logger.error("id-{}-{}".format(title, blog))
         if not title == "" and not blog == "":
             ipsum = Blog(title=title, body=blog)
             ipsum.put()
             #get id from db
             ida = ipsum.key().id()
-            logger.error("id{}".format(ida))
-            self.redirect('/blog/{}'.format(ida))
-
+            #logger.error("id{}".format(ida))
+            #self.redirect('/blog/{}'.format(ida))
+            #self.render('permalink.html', blog=ipsum)
+            self.redirect('/blog/%s' % str(ida))
+#4925812092436480
         else:
             error = "Please enter both a title and a blog post."
-            self.render('newpost.html', title, blog, error)
-
-
+            self.render_front(title, blog, error)
 
 class PermalinkHandler(Handler):
     def get(self, id):
-        title = self.request.get("title")
-        blog = self.request.get("blog")
-
-        t = jinja_env.get_template("permalink.html")
-        content = t.render(title)
-        self.response.write(content)
-
-
+        dolor = Blog.get_by_id(int(id))
+        # title = dolor.title
+        if dolor:
+            #logger.error("id{}".format(ida))
+            self.render('permalink.html', blog=dolor)
 
 
 app = webapp2.WSGIApplication([
